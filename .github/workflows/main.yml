@@ -1,0 +1,50 @@
+name: Build and Release
+
+on:
+  push:
+    branches:
+      - main
+  release:
+    types: [published]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        arch: [x64, arm64]
+        include:
+          - os: ubuntu-latest
+            target: linux
+          - os: windows-latest
+            target: win
+          - os: macos-latest
+            target: macos
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '16'
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Build with tsc
+      run: tsc
+
+    - name: Install pkg globally
+      run: npm install -g @yao-pkg/pkg
+
+    - name: Build
+      run: pkg . 
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: your-app-name
+        path: dist/
