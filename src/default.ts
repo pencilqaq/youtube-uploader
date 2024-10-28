@@ -59,11 +59,11 @@ export default class Default {
       for (const file of files) {
         if (file.isDirectory()) {
           if (this.regexForDir.test(file.name)) {
-            console.log(`跳过文件夹：${file.name}`);
+            //console.log(`跳过文件夹：${file.name}`);
           } else {
             let filePath = path.join(dir, file.name)
             const subFiles = await this.walkDir(filePath) // 等待子目录的递归调用
-            fileArray.push(subFiles)
+            fileArray = fileArray.concat(subFiles)
           }
         } else if (file.isFile() && this.regexForFile.test(file.name)) {
           console.log(`获取到文件：${path.join(dir, file.name)}`)

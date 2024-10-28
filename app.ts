@@ -17,7 +17,7 @@ const credentials = {
   recoveryemail: cliArgs.recemail,
 }
 
-log(cliArgs)
+//log(cliArgs)
 if (
   (cliArgs.o && cliArgs.p) ||
   (cliArgs.o && cliArgs.u) ||
@@ -32,18 +32,21 @@ async function runDefault() {
       await defaultIn.walkDir(cliArgs.dir),
       cliArgs
     )
-    log(video)
-    await index.testUpload(credentials, video)
+    for (const uploadInfo of video) {
+      await index.testUpload(credentials, uploadInfo)
+    }
   } else {
     log('不包含子目录')
     let video = index.getUploadInfo(
       await defaultIn.readDir(cliArgs.dir),
       cliArgs
     )
-    log(video)
-    await index.testUpload(credentials, video)
+    for (const uploadInfo of video) {
+      await index.testUpload(credentials, uploadInfo)
+    }
   }
 }
+
 if (cliArgs.l) {
 } else {
   runDefault()

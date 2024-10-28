@@ -9,11 +9,11 @@ export default class index {
     thumbnail: '',
     playlist: '',
     channelName: '',
-    onSuccess: '',
+    onSuccess: this.onVideoUploadSuccess(),
     skipProcessingWait: true,
-    onProgress: (progress: any) => {
+    onProgress: '' /* (progress: any) => {
       console.log('progress', progress)
-    },
+    } */,
     uploadAsDraft: false,
     isAgeRestriction: false,
     isNotForKid: false,
@@ -43,24 +43,24 @@ export default class index {
     videoInfo: { dir: string; name: string }[],
     cliArgs: any
   ) {
-    console.log(videoInfo)
     let uploadInfo
+    let uploadArray: any[] = []
     videoInfo.forEach((e) => {
       try {
         uploadInfo = this.video1
         uploadInfo.path = e.dir + e.name
-
+        let nameGroup = []
         if (e.name.split('_').length > 2) {
-          let nameGroup = e.name.split('_')
+          nameGroup = e.name.split('_')
           uploadInfo.title =
             '【' +
             nameGroup[0] +
             '】' +
             nameGroup[1] +
-            '|' +
+            ' | ' +
             (nameGroup[2].split(' ')[0].replace(/-/, '年').replace(/-/, '月') +
               '日') +
-            '|' +
+            ' | ' +
             nameGroup[3].replace(/\.[^.]+$/, '')
           uploadInfo.description = nameGroup[3].replace(/\.[^.]+$/, '')
           uploadInfo.playlist = nameGroup[1]
@@ -72,13 +72,14 @@ export default class index {
         } else {
           uploadInfo.publishType = 'PUBLIC' as const
         }
+        uploadArray.push(uploadInfo)
       } catch (err) {
         console.log(err)
       }
     })
-    return uploadInfo
+    return uploadArray
   }
   public async testUpload(credentials: any, videoInfo: any) {
-    upload(credentials, [videoInfo]).then(console.log)
+    await upload(credentials, [videoInfo]).then(console.log)
   }
 }
