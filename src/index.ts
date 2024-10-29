@@ -50,7 +50,10 @@ export default class index {
             isChannelMonetized: false,
           } */
   public async testUpload(credentials: any, videoInfo: any) {
-    await upload(credentials, [videoInfo],{args:["--no-sandbox",],}).then(console.log)
+    await upload(credentials, [videoInfo], {
+      headless: true,
+      args: ['--no-sandbox'],
+    }).then(console.log)
   }
 
   public getUploadInfo(
