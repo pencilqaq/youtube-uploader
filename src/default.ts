@@ -3,10 +3,11 @@ import path from 'node:path'
 
 export default class Default {
   private regexForFile = /^[^~$\.].*(?:\.(mp4|avi|mkv|mov|wmv|flv|webm))$/im
-  private regexForDir = /^[~$\.].*/
+  private regexForDir = /^[~$\.].*|^uploaded$/
   private onVideoUploadSuccess = (videoUrl: any) => {
     console.log('video uploaded successfully', videoUrl)
   }
+
   public async readDir(dir: string): Promise<any[]> {
     try {
       console.log(`读取目录${dir}中的文件：`)
@@ -42,6 +43,7 @@ export default class Default {
       throw Error(`读取目录${dir}:  err\n`)
     }
   }
+
   public async walkDir(dir: string): Promise<any> {
     try {
       let files: any[] = []

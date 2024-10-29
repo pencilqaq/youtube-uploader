@@ -1,24 +1,34 @@
 import { upload } from 'youtube-videos-uploader'
+import fs from 'fs'
+
+interface Video2 {
+  path: string
+  title: string
+  description: string
+  thumbnail?: string
+  playlist?: string
+  channelName?: string
+  onSuccess?: () => void
+  skipProcessingWait?: boolean
+  onProgress?: (progress: any) => void // 可选属性
+  uploadAsDraft?: boolean
+  isAgeRestriction?: boolean
+  isNotForKid?: boolean
+  publishType?: 'PUBLIC' | 'PRIVATE' | 'UNLISTED'
+  isChannelMonetized?: boolean
+}
 
 export default class index {
-  private onVideoUploadSuccess = () => {}
-  private video1 = {
-    path: '',
-    title: '',
-    description: '',
-    thumbnail: '',
-    playlist: '',
-    channelName: '',
-    onSuccess: this.onVideoUploadSuccess(),
-    skipProcessingWait: true,
-    onProgress: '' /* (progress: any) => {
-      console.log('progress', progress)
-    } */,
-    uploadAsDraft: false,
-    isAgeRestriction: false,
-    isNotForKid: false,
-    publishType: 'PUBLIC' as 'PUBLIC' | 'PRIVATE' | 'UNLISTED',
-    isChannelMonetized: false,
+  private async onVideoUploadSuccess(dir: string, name: string) {
+    if (dir && name) {
+      try {
+        console.log(`${dir}/${name} 上传成功`)
+        await fs.promises.rename(dir + name, dir + '/uploaded/' + name)
+        console.log(`已从${dir}/ 移动到 ${dir}/uploaded/`)
+      } catch (err) {
+        console.log(err)
+      }
+    }
   }
   // Extra options like tags, thumbnail, language, playlist etc
   /* const video2 = {
@@ -39,20 +49,25 @@ export default class index {
             publishType: 'PRIVATE',
             isChannelMonetized: false,
           } */
+  public async testUpload(credentials: any, videoInfo: any) {
+    await upload(credentials, [videoInfo]).then(console.log)
+  }
+
   public getUploadInfo(
     videoInfo: { dir: string; name: string }[],
     cliArgs: any
   ) {
-    let uploadInfo
     let uploadArray: any[] = []
-    videoInfo.forEach((e) => {
+    for (const e of videoInfo) {
       try {
-        uploadInfo = this.video1
-        uploadInfo.path = e.dir + e.name
-        let nameGroup = []
+        let test: Video2 = {
+          path: e.dir + e.name,
+          title: '',
+          description: '',
+        }
         if (e.name.split('_').length > 2) {
-          nameGroup = e.name.split('_')
-          uploadInfo.title =
+          let nameGroup = e.name.split('_')
+          test.title =
             '【' +
             nameGroup[0] +
             '】' +
@@ -62,24 +77,36 @@ export default class index {
               '日') +
             ' | ' +
             nameGroup[3].replace(/\.[^.]+$/, '')
-          uploadInfo.description = nameGroup[3].replace(/\.[^.]+$/, '')
-          uploadInfo.playlist = nameGroup[1]
+          test.description = nameGroup[3].replace(/\.[^.]+$/, '')
+          test.playlist = nameGroup[1]
+        } else {
+          test.title = e.name.replace(/\.[^.]+$/, '')
+          test.description = e.name.replace(/\.[^.]+$/, '')
         }
         if (cliArgs.p) {
-          uploadInfo.publishType = 'PRIVATE' as const
+          console.log('Private')
+          test.publishType = 'PRIVATE'
         } else if (cliArgs.u) {
-          uploadInfo.publishType = 'UNLISTED' as const
+          console.log('Unlisted')
+          test.publishType = 'UNLISTED'
         } else {
-          uploadInfo.publishType = 'PUBLIC' as const
+          console.log('Public')
+          test.publishType = 'PUBLIC'
         }
-        uploadArray.push(uploadInfo)
+        test.onSuccess = () => {
+          if (fs.existsSync(e.dir + '/uploaded') == false) {
+            fs.mkdirSync(e.dir + '/uploaded')
+          }
+          fs.promises.rename(
+            e.dir + '/' + e.name,
+            e.dir + '/uploaded/' + e.name
+          )
+        }
+        uploadArray.push(test)
       } catch (err) {
         console.log(err)
       }
-    })
+    }
     return uploadArray
-  }
-  public async testUpload(credentials: any, videoInfo: any) {
-    await upload(credentials, [videoInfo]).then(console.log)
   }
 }

@@ -26,12 +26,13 @@ if (
   throw Error('参数-o、-p、-u只能选一个')
 }
 async function runDefault() {
-  if (cliArgs.includeSubdirs) {
+  if (cliArgs.includeSubdirs || cliArgs.i) {
     log('包含子目录')
     let video = index.getUploadInfo(
       await defaultIn.walkDir(cliArgs.dir),
       cliArgs
     )
+    log(video)
     for (const uploadInfo of video) {
       await index.testUpload(credentials, uploadInfo)
     }
