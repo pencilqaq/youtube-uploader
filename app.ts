@@ -2,9 +2,11 @@ import { log } from 'console'
 import minimist from 'minimist'
 import Default from './src/default'
 import Index from './src/index'
+import PYYTBUPLOADER from './src/py-ytbuploader'
 
 const defaultIn = new Default()
 const index = new Index()
+const pyYtbUploader = new PYYTBUPLOADER()
 const cliArgs = minimist(process.argv.slice(2))
 
 if (cliArgs.l && cliArgs.n) {
@@ -48,7 +50,17 @@ async function runDefault() {
   }
 }
 
-if (cliArgs.l) {
+if (cliArgs.py) {
+  runPy()
 } else {
   runDefault()
+}
+
+async function runPy() {
+  let video = await defaultIn.walkDir(cliArgs.dir)
+  //log(video)
+  for (const uploadInfo of video) {
+    log(uploadInfo)
+    pyYtbUploader.upload(uploadInfo, cliArgs)
+  }
 }

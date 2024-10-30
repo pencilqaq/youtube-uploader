@@ -4,3 +4,6 @@ yt-auth/
 .vscode/
 */backup*
 backup*
+yt-auth/
+client_secrets.json
+request.token
