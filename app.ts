@@ -19,7 +19,7 @@ const credentials = {
   recoveryemail: cliArgs.recemail,
 }
 
-//log(cliArgs)
+log(cliArgs)
 if (
   (cliArgs.o && cliArgs.p) ||
   (cliArgs.o && cliArgs.u) ||
@@ -29,29 +29,46 @@ if (
 }
 async function runDefault() {
   if (cliArgs.includeSubdirs || cliArgs.i) {
-    log('包含子目录')
-    let video = index.getUploadInfo(
-      await defaultIn.walkDir(cliArgs.dir),
-      cliArgs
-    )
-    log(video)
-    for (const uploadInfo of video) {
-      await index.testUpload(credentials, uploadInfo)
+    if (cliArgs.l) {
+      let video = await defaultIn.walkDir(cliArgs.dir)
+      for (const uploadInfo of video) {
+        pyYtbUploader.upload(uploadInfo, cliArgs)
+      }
+    } else {
+      log('包含子目录')
+      let video = index.getUploadInfo(
+        await defaultIn.walkDir(cliArgs.dir),
+        cliArgs
+      )
+      log(video)
+      for (const uploadInfo of video) {
+        await index.testUpload(credentials, uploadInfo)
+      }
     }
   } else {
-    log('不包含子目录')
-    let video = index.getUploadInfo(
-      await defaultIn.readDir(cliArgs.dir),
-      cliArgs
-    )
-    for (const uploadInfo of video) {
-      await index.testUpload(credentials, uploadInfo)
+    if (cliArgs.l) {
+      let video = await defaultIn.readDir(cliArgs.dir)
+      for (const uploadInfo of video) {
+        pyYtbUploader.upload(uploadInfo, cliArgs)
+      }
+    } else {
+      log('不包含子目录')
+      let video = index.getUploadInfo(
+        await defaultIn.readDir(cliArgs.dir),
+        cliArgs
+      )
+      for (const uploadInfo of video) {
+        await index.testUpload(credentials, uploadInfo)
+      }
     }
   }
 }
 
 if (cliArgs.py) {
-  runPy()
+  if (cliArgs.l) {
+  } else {
+    runPy()
+  }
 } else {
   runDefault()
 }

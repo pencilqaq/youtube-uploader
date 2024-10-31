@@ -8,7 +8,7 @@ interface Video2 {
   thumbnail?: string
   playlist?: string
   channelName?: string
-  onSuccess?: () => void
+  onSuccess?: void
   skipProcessingWait?: boolean
   onProgress?: (progress: any) => void // 可选属性
   uploadAsDraft?: boolean
@@ -18,7 +18,7 @@ interface Video2 {
   isChannelMonetized?: boolean
 }
 
-export default class index {
+export default class Index {
   private async onVideoUploadSuccess(dir: string, name: string) {
     if (dir && name) {
       try {
@@ -29,6 +29,12 @@ export default class index {
         console.log(err)
       }
     }
+  }
+  public reName(e: { dir: string; name: string }) {
+    if (fs.existsSync(e.dir + '/uploaded') == false) {
+      fs.mkdirSync(e.dir + '/uploaded')
+    }
+    fs.promises.rename(e.dir + '/' + e.name, e.dir + '/uploaded/' + e.name)
   }
   // Extra options like tags, thumbnail, language, playlist etc
   /* const video2 = {
@@ -96,15 +102,7 @@ export default class index {
           console.log('Public')
           test.publishType = 'PUBLIC'
         }
-        test.onSuccess = () => {
-          if (fs.existsSync(e.dir + '/uploaded') == false) {
-            fs.mkdirSync(e.dir + '/uploaded')
-          }
-          fs.promises.rename(
-            e.dir + '/' + e.name,
-            e.dir + '/uploaded/' + e.name
-          )
-        }
+        test.onSuccess = this.reName(e)
         uploadArray.push(test)
       } catch (err) {
         console.log(err)
