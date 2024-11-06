@@ -43,6 +43,7 @@ export default class Default {
 
   public async walkDir(dir: string): Promise<any> {
     try {
+      console.log(`读取目录${dir}中的文件：`)
       let files: any[] = []
       try {
         files = await fs.promises.readdir(dir, { withFileTypes: true }) // 异步读取目录内容

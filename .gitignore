@@ -2,6 +2,7 @@ node_modules/
 dist/
 yt-auth/
 .vscode/
+test*
 */backup*
 backup*
 yt-auth/

@@ -110,4 +110,12 @@ export default class Index {
     }
     return uploadArray
   }
+  public await(ms: number) {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        console.log(`wait for ${ms}ms`)
+        resolve(ms)
+      }, ms)
+    })
+  }
 }
