@@ -1,5 +1,5 @@
 import fs from 'fs'
-import path from 'node:path'
+import path from 'path'
 
 export default class Default {
   private regexForFile = /^[^~$\.].*(?:\.(mp4|avi|mkv|mov|wmv|flv|webm))$/im
@@ -79,5 +79,19 @@ export default class Default {
       console.error(`无法访问目录 ${dir}:`, err)
       throw err
     }
+  }
+  public reName(e: { dir: string; name: string }) {
+    if (fs.existsSync(e.dir + '/uploaded') == false) {
+      fs.mkdirSync(e.dir + '/uploaded')
+    }
+    fs.promises.rename(e.dir + '/' + e.name, e.dir + '/uploaded/' + e.name)
+  }
+  public await(ms: number) {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        console.log(`wait for ${ms}ms`)
+        resolve(ms)
+      }, ms)
+    })
   }
 }

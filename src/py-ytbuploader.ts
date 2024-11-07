@@ -1,32 +1,49 @@
-import { execFileSync } from 'node:child_process'
-import Index from '.'
+import { execFile, execFileSync } from 'child_process'
+import fs from 'fs'
 
 export default class PYYTBUPLOADER {
+  private reName(e: { dir: string; name: string }) {
+    if (fs.existsSync(e.dir + '/uploaded') == false) {
+      fs.mkdirSync(e.dir + '/uploaded')
+    }
+    fs.promises.rename(e.dir + '/' + e.name, e.dir + '/uploaded/' + e.name)
+  }
   public upload(videoInfo: any, cliArgs: any) {
-    let config = []
-    config.push(`-filename "${videoInfo.dir}${videoInfo.name}"`)
-    if (videoInfo.name.split('_').length > 2) {
-      let nameGroup = videoInfo.name.split('_')
-      config.push(
-        `-title "【${nameGroup[0]}】 ${
-          nameGroup[1].split(' ')[0].replace(/-/, '年').replace(/-/, '月') +
-          '日'
-        } | ${nameGroup[2].replace(/\.[^.]+$/, '')}"`
-      )
+    let config: string[] = []
+    try {
+      config = config.concat('-filename', `${videoInfo.dir}${videoInfo.name}`)
+      if (videoInfo.name.split('_').length > 2) {
+        let nameGroup = videoInfo.name.split('_')
+        config.push('-title')
+        config.push(
+          `【${nameGroup[0]}】 ${
+            nameGroup[1].split(' ')[0].replace(/-/, '年').replace(/-/, '月') +
+            '日'
+          } | ${nameGroup[2].replace(/\.[^.]+$/, '')}`
+        )
+      }
+      if (cliArgs.secrets) {
+        config = config.concat(['-secrets', `${cliArgs.secrets}`])
+      }
+      switch (cliArgs.privacy) {
+        case 'public':
+          console.log('public')
+          config = config.concat(['-privacy', 'public'])
+          break
+        case 'private':
+          console.log('private')
+          config = config.concat(['-privacy', 'private'])
+          break
+        case 'unlisted':
+          console.log('unlisted')
+          config = config.concat(['-privacy', 'unlisted'])
+          break
+      }
+      console.log(config)
+      execFileSync('../youtubeuploader.exe', config)
+    } catch (err) {
+      throw err
     }
-    if (cliArgs.secrets) {
-      config.push(`-secrets "${cliArgs.secrets}"`)
-    }
-    if (cliArgs.o) {
-      config.push('-privacy public')
-    }
-    if (cliArgs.p) {
-      config.push('-privacy private')
-    }
-    if (cliArgs.u) {
-      config.push('-privacy unlisted')
-    }
-    execFileSync('../youtubeuploader.exe', config)
-    new Index().reName(videoInfo)
+    this.reName(videoInfo)
   }
 }

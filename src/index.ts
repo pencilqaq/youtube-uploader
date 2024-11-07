@@ -1,5 +1,6 @@
 import { upload } from 'youtube-videos-uploader'
 import fs from 'fs'
+import Default from './default'
 
 interface Video2 {
   path: string
@@ -30,12 +31,7 @@ export default class Index {
       }
     }
   }
-  public reName(e: { dir: string; name: string }) {
-    if (fs.existsSync(e.dir + '/uploaded') == false) {
-      fs.mkdirSync(e.dir + '/uploaded')
-    }
-    fs.promises.rename(e.dir + '/' + e.name, e.dir + '/uploaded/' + e.name)
-  }
+
   // Extra options like tags, thumbnail, language, playlist etc
   /* const video2 = {
             path: 'e:/demo.flv',
@@ -102,7 +98,7 @@ export default class Index {
           console.log('Public')
           test.publishType = 'PUBLIC'
         }
-        test.onSuccess = this.reName(e)
+        test.onSuccess = new Default().reName(e)
         uploadArray.push(test)
       } catch (err) {
         console.log(err)
@@ -110,12 +106,5 @@ export default class Index {
     }
     return uploadArray
   }
-  public await(ms: number) {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        console.log(`wait for ${ms}ms`)
-        resolve(ms)
-      }, ms)
-    })
-  }
+  
 }
