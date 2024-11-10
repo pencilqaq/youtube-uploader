@@ -40,10 +40,15 @@ export default class PYYTBUPLOADER {
           config = config.concat(['-privacy', 'unlisted'])
           break
       }
+      if (cliArgs.meta) {
+        config = config.concat(['-metaJSON', `${cliArgs.meta}`])
+      }
       console.log(config)
       if (os.type() === 'Windows_NT') {
+        console.log(new Date())
         execFileSync('./youtubeuploader.exe', config)
       } else {
+        console.log(new Date())
         execFileSync('./youtubeuploader', config)
       }
       //execFile('../youtubeuploader.exe', config,{shell:true}).stdout?.pipe(process.stdout)
