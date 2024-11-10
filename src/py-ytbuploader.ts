@@ -1,4 +1,5 @@
-import { execFile, execFileSync } from 'child_process'
+import { execFileSync } from 'child_process'
+import os from 'os'
 import fs from 'fs'
 
 export default class PYYTBUPLOADER {
@@ -40,10 +41,15 @@ export default class PYYTBUPLOADER {
           break
       }
       console.log(config)
-      execFileSync('../youtubeuploader.exe', config)
+      if (os.type() === 'Windows_NT') {
+        execFileSync('./youtubeuploader.exe', config)
+      } else {
+        execFileSync('./youtubeuploader', config)
+      }
+      //execFile('../youtubeuploader.exe', config,{shell:true}).stdout?.pipe(process.stdout)
+      this.reName(videoInfo)
     } catch (err) {
       throw err
     }
-    this.reName(videoInfo)
   }
 }
