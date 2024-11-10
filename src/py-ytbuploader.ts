@@ -52,6 +52,7 @@ export default class PYYTBUPLOADER {
         execFileSync('./youtubeuploader', config)
       }
       //execFile('../youtubeuploader.exe', config,{shell:true}).stdout?.pipe(process.stdout)
+      console.log('上传完成移动到unlisted文件夹')
       this.reName(videoInfo)
     } catch (err) {
       throw err
